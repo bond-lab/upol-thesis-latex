@@ -14,7 +14,9 @@
 \usepackage{booktabs}              % \toprule, \midrule, \bottomrule
 \usepackage{pgfplots}              % charts drawn from data
 \usetikzlibrary{positioning}
-\pgfplotsset{compat=1.18}
+\pgfplotsset{compat=1.18,
+  /pgf/number format/assume math mode=true,  % numbers in the text font
+  /pgf/number format/use comma}               % Czech decimal comma
 \sisetup{group-separator={\,}, output-decimal-marker={,}}  % Czech numbers
 
 \thesisbibfile{example.bib}
@@ -57,7 +59,11 @@ průběh i~výsledný stav:
 Většina českých sloves tvoří vidové dvojice (Tabulka~\ref{tab:pary}).
 Tabulky mají popisek pod tabulkou, čísla zarovnaná podle desetinné čárky
 (sloupec \texttt{S} balíku \texttt{siunitx}) a~jen vodorovné linky
-(\texttt{booktabs}).
+(\texttt{booktabs}).  Nejvyšší hodnota v~každém sloupci je vysázena tučně
+(\verb|\bfseries| před číslem), aby byla na první pohled vidět.  Písmo
+TeX Gyre Pagella má tučné číslice stejně široké jako obyčejné, takže
+tučné číslo nenaruší zarovnání sloupce.  V~Tabulce~\ref{tab:dvojice}
+v~příloze je stejně zvýrazněna vyšší hodnota v~každém řádku.
 
 \begin{table}[htbp]
   \centering
@@ -65,13 +71,14 @@ Tabulky mají popisek pod tabulkou, čísla zarovnaná podle desetinné čárky
     \toprule
     Vid & {Výskyty} & {Podíl (\%)} \\
     \midrule
-    perfektivum   & 41250 & 55.3 \\
+    perfektivum   & \bfseries 41250 & \bfseries 55.3 \\
     imperfektivum & 33310 & 44.7 \\
     \midrule
     celkem        & 74560 & 100.0 \\
     \bottomrule
   \end{tabular}
-  \caption{Četnost vidových tvarů v~korpusu (smyšlená data)}
+  \caption{Četnost vidových tvarů v~korpusu; tučně je nejvyšší hodnota
+    ve sloupci (smyšlená data)}
   \label{tab:pary}
 \end{table}
 
@@ -122,13 +129,14 @@ Text.
     \toprule
     {Imperfektivum} & {Perfektivum} & {ipf.} & {pf.} \\
     \midrule
-    \emph{dělat}   & \emph{udělat}   & 2140 & 3120 \\
-    \emph{psát}    & \emph{napsat}   & 1210 & 1530 \\
-    \emph{říkat}   & \emph{říct}     & 1980 & 2650 \\
-    \emph{kupovat} & \emph{koupit}   &  410 &  880 \\
+    \emph{dělat}   & \emph{udělat}   & 2140 & \bfseries 3120 \\
+    \emph{psát}    & \emph{napsat}   & 1210 & \bfseries 1530 \\
+    \emph{říkat}   & \emph{říct}     & 1980 & \bfseries 2650 \\
+    \emph{kupovat} & \emph{koupit}   &  410 & \bfseries  880 \\
     \bottomrule
   \end{tabular}
-  \caption{Nejčastější vidové dvojice (smyšlená data)}
+  \caption{Nejčastější vidové dvojice; tučně je vyšší hodnota v~řádku
+    (smyšlená data)}
   \label{tab:dvojice}
 \end{table}
 

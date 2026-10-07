@@ -5,14 +5,15 @@
 Třída pro LaTeX určená pro bakalářské, diplomové a disertační práce na
 Filozofické fakultě Univerzity Palackého v Olomouci (FF UP). Vysází titulní
 stranu, prohlášení, český a anglický abstrakt a obsah. Pro stranu
-s abstraktem také spočítá strany, znaky a přílohy. Zatím podporuje pouze
-Katedru obecné lingvistiky (KOL).
+s abstraktem také spočítá strany, znaky a přílohy. Zatím podporuje dvě
+katedry: Katedru obecné lingvistiky (KOL) a Katedru asijských studií (KAS).
 
 | Ukázka | Zdroj | PDF |
 |---|---|---|
 | Bakalářská práce v češtině: obrázky, tabulky, glosy, dvě přílohy | [`example-kol.tex`](example-kol.tex) | [`example-kol.pdf`](example-kol.pdf) |
 | Disertační práce v angličtině | [`example-kol-phd.tex`](example-kol-phd.tex) | [`example-kol-phd.pdf`](example-kol-phd.pdf) |
 | Její autoreferát | [`example-kol-phd-autoreferat.tex`](example-kol-phd-autoreferat.tex) | [`example-kol-phd-autoreferat.pdf`](example-kol-phd-autoreferat.pdf) |
+| Bakalářská práce KAS v češtině s čínštinou a japonštinou | [`example-kas.tex`](example-kas.tex) | [`example-kas.pdf`](example-kas.pdf) |
 
 ## Soubory
 
@@ -20,6 +21,7 @@ Katedru obecné lingvistiky (KOL).
 |---|---|
 | `upolthesis.cls` | třída: části společné celé fakultě a texty v češtině, slovenštině a angličtině |
 | `upolthesis-kol.def` | nastavení KOL: názvy, označení typu práce, titulní strana, minimální rozsah |
+| `upolthesis-kas.def` | nastavení KAS: sazba, pořadí stran, anotace, resumé |
 | `UP_logo_FF_stred_cerna_*.pdf` | oficiální loga FF z <https://vizual.upol.cz/> |
 | `acl_natbib.bst` | citační styl ACL pro `bib=acl` |
 | `upol-count.sh` | spočítá znaky textu |
@@ -40,7 +42,10 @@ a čísla se tisknou až od obsahu. To `report` umožňuje, kdežto `book`
 - TeX Live 2022 nebo novější s LuaLaTeXem, biberem a bibtexem;
 - `pdftotext` (z balíku poppler) pro počet znaků;
 - české a slovenské dělení slov (`texlive-lang-czechslovak` v Debianu
-  a Ubuntu).
+  a Ubuntu);
+- pro čínštinu, japonštinu nebo korejštinu písma Noto Serif CJK
+  (`fonts-noto-cjk` v Debianu a Ubuntu, nebo z
+  <https://github.com/notofonts/noto-cjk>).
 
 Zkopírujte soubory třídy k práci a spusťte:
 
@@ -115,15 +120,16 @@ Třída odmítne pdfLaTeX. XeLaTeX funguje také.
 
 | Volba | Hodnoty (výchozí první) | Poznámka |
 |---|---|---|
-| `department` | `kol` | další budou: `kas`, `kaa`, `kb` |
+| `department` | `kol`, `kas` | další budou: `kaa`, `kb` |
 | `type` | `ba`, `ma`, `phd` | |
 | `autoreferat` | | autoreferát disertační práce (nastaví `type=phd`) |
 | `language` | `czech`, `slovak`, `english` | jazyk práce |
 | `gender` | `x`, `f`, `m` | tvary sloves v prohlášení; `x` vysází *vypracoval/a* |
 | `bib` | `apa`, `acl`, `none` | `apa`: biblatex-apa s biberem; `acl`: natbib s `acl_natbib.bst` a bibtexem |
-| `font` | `pagella`, `charis`, `termes`, `none` | `charis` (Charis SIL) pokrývá celou IPA |
-| `logo` | `shield`, `faculty`, `none` | štít UP, nebo celé logo FF |
-| `spacing` | podle katedry (KOL: 1,3) | řádkování |
+| `font` | podle katedry (KOL: `pagella`, KAS: `tnr`); `charis`, `termes`, `none` | `tnr` je Times New Roman, nebo TeX Gyre Termes, pokud Times New Roman chybí; `charis` (Charis SIL) pokrývá celou IPA |
+| `logo` | podle katedry (KOL: `shield`, KAS: `none`); `faculty` | štít UP, nebo celé logo FF |
+| `cjk` | podle katedry (KAS: `{zh,ja,ko}`) | čínština (`zh`, `zhtw`), japonština (`ja`), korejština (`ko`); jen LuaLaTeX |
+| `spacing` | podle katedry (KOL: 1,3, KAS: 1,241) | řádkování |
 | `twoside` | | pro tištěné výtisky |
 
 Pro lingvistiku doporučujeme APA nebo ACL. Oba styly znají `\citet`,
@@ -147,7 +153,10 @@ Nepovinné:
 - `\aiuse`: jak byly použity nástroje umělé inteligence; vysází se pod
   prohlášení. Studijní a zkušební řád UP (čl. 26 odst. 3) považuje
   nepřiznaný text vytvořený umělou inteligencí za plagiát.
-- `\charcount`, `\numappendices`: ručně zadaný počet znaků a příloh
+- `\abbreviations`, `\editorialnote`: seznam zkratek a ediční poznámka
+  (o transkripci, znacích apod.); vysázejí se za obsah
+- `\charcount`, `\numappendices`, `\numbibitems`: ručně zadaný počet
+  znaků, příloh a titulů literatury
 - jen u disertačních prací:
   - `\programme`: výchozí je studijní program katedry
   - `\ipstatement`: prohlášení o duševním vlastnictví podle SZŘ UP čl. 44
@@ -159,6 +168,7 @@ Nepovinné:
 
 - **Strany:** celkový počet stran.
 - **Přílohy:** počet kapitol za `\appendix`.
+- **Tituly použité literatury** (KAS): počet položek v seznamu literatury.
 - **Znaky:** včetně mezer, od první kapitoly po úvodních stranách až po
   seznam literatury nebo přílohy. `upol-count.sh` je bere z PDF, takže
   započítá i poznámky pod čarou, popisky a čísla stran.
@@ -179,6 +189,51 @@ vysází **???**.
 
 Popisky obrázků i tabulek jsou pod nimi. Obrázek ze souboru vložíte
 příkazem `\includegraphics[width=.8\textwidth]{obrazek.pdf}`.
+
+Nejvyšší hodnota ve sloupci (nebo řádku) je tučně: ve sloupci `S` napište
+před číslo `\bfseries` a zarovnání zůstane zachováno. Písma třídy (TeX Gyre
+Pagella, TeX Gyre Termes, Times New Roman) mají tučné číslice přesně stejně
+široké jako obyčejné, takže tučná čísla lícují. Tučné číslice písma Charis
+SIL jsou o něco širší.
+
+## Čínština, japonština a korejština
+
+S volbou `cjk={zh,ja,ko}` (výchozí pro KAS) můžete znaky psát přímo do
+textu. Třída sama přepne na písmo Noto CJK a CJK text láme do řádků. Kana
+a hangul jsou jednoznačné. Znaky han bez kany se sázejí jako první jazyk
+v seznamu, u KAS tedy jako čínština. Samostatná japonská kandži zapište
+jako `\textja{茶道}`; stejně fungují `\textzh`, `\textzhtw` a `\textko`.
+Funguje jen s LuaLaTeXem.
+
+## Z čeho nastavení KAS vychází
+
+Podle dokumentu *Jak napsat závěrečnou práci na katedře asijských studií*
+(2023):
+
+- **Rozsah:** bakalářská práce 30–40 normostran, diplomová 60–80. Třída
+  varuje pod minimem i nad maximem.
+- **Sazba:** Times New Roman 12 bodů, okraje 25 mm, řádkování 1,5, zarovnání
+  do bloku, odsazení odstavců 1 cm.
+- **Pořadí:**
+  1. titulní strana;
+  2. prohlášení (bez podpisu);
+  3. anotace: počet stran, znaků, titulů použité literatury a příloh,
+     klíčová slova a text z `\abstractcs`;
+  4. poděkování;
+  5. obsah a seznamy;
+  6. seznam zkratek a ediční poznámka;
+  7. text práce;
+  8. `\makeresume` za závěrem: anglické resumé o 100–200 slovech
+     z `\abstracten`;
+  9. literatura a přílohy.
+
+  Titulní strana, prohlášení, anotace a poděkování se započítávají do
+  číslování, ale číslo strany na nich není.
+- **Anglická práce:** souběžný název a resumé jsou místo toho české,
+  z `\titlecs` a `\abstractcs`.
+- Citační normu KAS nepředepisuje. Doporučujeme APA nebo ACL.
+- Pravidla pro disertační práce KAS nezveřejňuje; `type=phd` použije
+  výchozí nastavení fakulty s titulní stranou KAS.
 
 ## Z čeho nastavení KOL vychází
 
@@ -221,11 +276,7 @@ Zkopírujte `upolthesis-kol.def` jako `upolthesis-<katedra>.def` a upravte
 názvy, označení typu práce, titulní stranu, okraje a minimální rozsah. Pak
 ho použijte volbou `department=<katedra>`.
 
-Plánujeme:
-
-- KAS: čínské a japonské písmo, pevné pořadí stran (ediční poznámka,
-  anglické resumé) a anotaci s počtem položek literatury;
-- KAA a KB.
+Plánujeme: KAA a KB.
 
 Slovenské texty by měl ještě zkontrolovat rodilý mluvčí.
 

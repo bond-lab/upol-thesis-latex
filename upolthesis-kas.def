@@ -1,0 +1,78 @@
+%% upolthesis-kas.def -- Katedra asijských studií (Asian Studies)
+%%
+%% Follows "Jak napsat závěrečnou práci na katedře asijských studií" (2023):
+%%   - length: BA 30-40 normostran, MA 60-80
+%%   - Times New Roman 12 pt, 25 mm margins, 1.5 line spacing, justified,
+%%     1 cm paragraph indent
+%%   - title page, declaration, annotation and acknowledgements are counted
+%%     but carry no page number
+%%   - order: title page, declaration, annotation (with counts of pages,
+%%     characters, works cited, appendices), acknowledgements, contents,
+%%     lists, abbreviations, editorial note, introduction ... conclusion,
+%%     English résumé (100-200 words), sources, bibliography, appendices
+%%   - no citation style is prescribed
+%% KAS publishes no rules for dissertations; type=phd uses the faculty
+%% defaults with this title page.
+\ProvidesFile{upolthesis-kas.def}[2026/10/07 v0.1 KAS preset]
+
+\upol@defstr{dept}{Katedra asijských studií}{Katedra asijských studií}
+  {Department of Asian Studies}
+\upol@defstr{type@ba}{bakalářská diplomová práce}{bakalárska práca}
+  {Bachelor's thesis}
+\upol@defstr{type@ma}{magisterská diplomová práce}{diplomová práca}
+  {Master's thesis}
+\upol@defstr{typeacc@ba}{bakalářskou diplomovou práci}{bakalársku prácu}
+  {bachelor's thesis}
+\upol@defstr{typeacc@ma}{magisterskou diplomovou práci}{diplomovú prácu}
+  {master's thesis}
+% lower-case labels for the title page
+\upol@defstr{tp@supervisor}{vedoucí diplomové práce}{vedúci práce}{supervisor}
+\upol@defstr{tp@supervisor/phd}{školitel}{školiteľ}{supervisor}
+\upol@defstr{tp@consultant}{konzultant}{konzultant}{consultant}
+
+% one normostrana = 1,800 characters
+\def\upol@minchars@ba{54000}  \def\upol@maxchars@ba{72000}
+\def\upol@minchars@ma{108000} \def\upol@maxchars@ma{144000}
+
+% layout
+\geometry{top=25mm, bottom=25mm, inner=25mm, outer=25mm}
+\def\upol@deptspacing{1.241}  % setspace's equivalent of Word's 1.5 lines at 12 pt
+\setlength\parindent{1cm}
+\def\upol@deptfont{tnr}       % Times New Roman, or TeX Gyre Termes
+\def\upol@deptlogo{none}      % the KAS title page has no logo
+\def\upol@deptcjk{zh,ja,ko}   % plain Han characters are set as Chinese
+
+% the KAS declaration, without the title; the 2023 rules ask for no
+% signature
+\def\upol@declare@cs{Prohlašuji, že jsem \upol@strin{cs}{typeacc@\upol@type}
+  \upol@g{vypracoval}{vypracovala}{vypracoval/a} samostatně
+  a~\upol@g{uvedl}{uvedla}{uvedl/a} veškeré použité prameny a~literaturu.}
+\upol@signaturefalse
+
+% declaration, annotation, acknowledgements
+\renewcommand\upol@frontpages{%
+  \upol@declarationpage
+  \upol@annotationpage
+  \upol@ackpage}
+
+% English résumé of 100-200 words after the conclusion
+\upol@resumewords{100}{200}
+
+% title page as in the 2023 rules
+\renewcommand\upol@titlepage{%
+  \begingroup\thispagestyle{empty}\centering\setstretch{1.1}
+    {\large\MakeUppercase{\upol@str{university}}\par
+      \upol@str{faculty}\par\upol@str{dept}\par}
+    \vspace{2\baselineskip}
+    {\large\MakeUppercase{\upol@typeline}\par}
+    \vfill\upol@logobox\vfill
+    {\Huge\bfseries\upol@thetitle\par}
+    \medskip{\Large\upol@titlein{\upol@othercode}\par}
+    \vfill
+    {\large OLOMOUC \upol@year\quad\@author\par}
+    \bigskip
+    \upol@str{tp@supervisor}: \upol@supervisor\par
+    \ifdefined\upol@consultant\upol@str{tp@consultant}: \upol@consultant\par\fi
+    \ifx\upol@type\upol@tmp@phd
+      \upol@str{programme}: \upol@theprogramme\par\fi
+  \endgroup\clearpage}

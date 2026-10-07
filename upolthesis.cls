@@ -20,19 +20,21 @@
 \newif\ifupol@autoref
 \DeclareKeys[upol]{
   autoreferat.code = \upol@autoreftrue, % the autoreferát of a dissertation
-  department.store = \upol@dept,     % kol (more to come: kas, kaa, kb)
+  department.store = \upol@dept,     % kol | kas
   type.store       = \upol@type,     % ba | ma | phd
   language.store   = \upol@lang,     % czech | slovak | english
   gender.store     = \upol@gender,   % f | m | x (x prints "vypracoval/a")
   bib.store        = \upol@bib,      % apa | acl | none
-  font.store       = \upol@font,     % pagella | charis | termes | none
+  font.store       = \upol@font,     % pagella | charis | termes | tnr | none
   logo.store       = \upol@logo,     % shield | faculty | none
+  cjk.store        = \upol@cjk,      % e.g. {zh,ja,ko}; the first gets plain Han
   spacing.store    = \upol@spacing,  % line stretch; empty = department default
   twoside.code     = \PassOptionsToClass{twoside,openright}{report},
 }
 \DeclareUnknownKeyHandler[upol]{\PassOptionsToClass{\CurrentOption}{report}}
+% font, logo, cjk and spacing left empty take the department's default
 \SetKeys[upol]{department=kol, type=ba, language=czech, gender=x, bib=apa,
-  font=pagella, logo=shield, spacing=}
+  font=, logo=, cjk=, spacing=}
 \ProcessKeyOptions[upol]
 
 \LoadClass[a4paper,12pt]{report}
@@ -44,8 +46,11 @@
 \def\upol@tmp{english}\ifx\upol@lang\upol@tmp \def\upol@langcode{en}\fi
 \def\upol@tmp{slovak}\ifx\upol@lang\upol@tmp
   \def\upol@langcode{sk}\def\upol@natcode{sk}\def\upol@natlang{slovak}\fi
+% the "other" language: English, or the national one for an English thesis
+\def\upol@othercode{en}
 \def\upol@tmp@en{en}
 \def\upol@tmp@phd{phd}
+\ifx\upol@langcode\upol@tmp@en\let\upol@othercode\upol@natcode\fi
 \expandafter\def\csname upol@babel@cs\endcsname{czech}
 \expandafter\def\csname upol@babel@sk\endcsname{slovak}
 \expandafter\def\csname upol@babel@en\endcsname{english}
@@ -65,19 +70,9 @@
 \RequirePackage{titlesec}
 \RequirePackage{zref-user,zref-totpages,zref-abspage}
 \RequirePackage{siunitx}
-
-%% ------------------------------------------------------------------ fonts
-\newcommand\upol@setfont[2]{% #1 = font name, #2 = which (main/sans/mono)
-  \IfFontExistsTF{#1}{\csname set#2font\endcsname{#1}}
-    {\ClassWarning{upolthesis}{Font `#1' not found; keeping default}}}
-\def\upol@tmp{pagella}\ifx\upol@font\upol@tmp
-  \upol@setfont{TeX Gyre Pagella}{main}\upol@setfont{TeX Gyre Heros}{sans}\fi
-\def\upol@tmp{termes}\ifx\upol@font\upol@tmp
-  \upol@setfont{TeX Gyre Termes}{main}\upol@setfont{TeX Gyre Heros}{sans}\fi
-\def\upol@tmp{charis}\ifx\upol@font\upol@tmp  % full IPA coverage
-  \upol@setfont{Charis SIL}{main}\upol@setfont{TeX Gyre Heros}{sans}\fi
-\def\upol@tmp{none}\ifx\upol@font\upol@tmp\else
-  \upol@setfont{Inconsolata}{mono}\fi
+% numbers in the text font, not maths digits; \bfseries before a number
+% in an S column makes it bold and keeps it aligned
+\sisetup{mode=match, reset-text-series=false, text-series-to-math=true}
 
 %% ---------------------------------------------------------------- strings
 %% \upol@defstr{key}{cs}{sk}{en}; \upol@str{key} uses the thesis language,
@@ -122,6 +117,9 @@
 \upol@defstr{autoref}{autoreferát disertační práce}
   {autoreferát dizertačnej práce}{summary of the doctoral dissertation}
 \upol@defstr{summary}{Souhrn}{Súhrn}{Summary}
+\upol@defstr{resume}{Resumé}{Resumé}{Summary}
+\upol@defstr{abbrev}{Seznam zkratek}{Zoznam skratiek}{List of abbreviations}
+\upol@defstr{editnote}{Ediční poznámka}{Edičná poznámka}{Editorial note}
 \upol@defstr{bibname}{Literatura a zdroje}{Literatúra a zdroje}{References}
 % abstract page
 \upol@defstr{abstract}{Abstrakt}{Abstrakt}{Abstract}
@@ -133,6 +131,12 @@
 \upol@defstr{a@chars}{znaků}{znakov}{characters}
 \upol@defstr{a@app}{Počet příloh}{Počet príloh}{Number of appendices}
 \upol@defstr{a@keywords}{Klíčová slova}{Kľúčové slová}{Keywords}
+% annotation page (KAS)
+\upol@defstr{annotation}{Anotace}{Anotácia}{Annotation}
+\upol@defstr{a@npages}{Počet stran}{Počet strán}{Number of pages}
+\upol@defstr{a@nchars}{Počet znaků}{Počet znakov}{Number of characters}
+\upol@defstr{a@nbib}{Počet titulů použité literatury}
+  {Počet titulov použitej literatúry}{Number of works cited}
 
 % the declaration sentence: \upol@declare@<lang>
 \def\upol@g#1#2#3{% masculine / feminine / unspecified
@@ -195,9 +199,12 @@
 \newcommand\submissiondate[1]{\def\upol@date{#1}}
 \NewDocumentCommand\acknowledgements{+m}{\def\upol@ack{#1}}
 \NewDocumentCommand\aiuse{+m}{\def\upol@aiuse{#1}}
+\NewDocumentCommand\abbreviations{+m}{\def\upol@abbrev{#1}}
+\NewDocumentCommand\editorialnote{+m}{\def\upol@editnote{#1}}
 % manual overrides for the automatic counts
 \newcommand\charcount[1]{\def\upol@chars{#1}}
 \newcommand\numappendices[1]{\def\upol@appcount{#1}}
+\newcommand\numbibitems[1]{\def\upol@bibcount{#1}}
 
 \def\upol@supervisor{\textbf{???}}
 \edef\upol@year{\the\year}
@@ -208,7 +215,8 @@
 %% PDF text between the labels upol@textstart and upol@textend (the start
 %% of the bibliography or the appendices).  Appendices: chapters after
 %% \appendix.
-\providecommand\upol@appcount{0}
+\def\upol@autoapps{0}
+\def\upol@autobib{0}
 \def\upol@autochars{0}
 \AtBeginDocument{%
   \makeatletter\InputIfFileExists{\jobname.chars}{}{}\makeatother
@@ -217,7 +225,13 @@
       \ifnum\upol@autochars<\csuse{upol@minchars@\upol@type}\relax
         \ClassWarningNoLine{upolthesis}{The text has \upol@autochars\space
           characters; the minimum is \csuse{upol@minchars@\upol@type}}%
-      \fi\fi}{}}
+      \fi\fi}{}%
+  \ifcsdef{upol@maxchars@\upol@type}{%
+    \ifnum\upol@autochars>\csuse{upol@maxchars@\upol@type}\relax
+      \ClassWarningNoLine{upolthesis}{The text has \upol@autochars\space
+        characters; the department's maximum is
+        \csuse{upol@maxchars@\upol@type}}%
+    \fi}{}}
 \newif\ifupol@app
 \newif\ifupol@ended
 % upol@textstart is set by the first chapter heading after the front
@@ -227,24 +241,33 @@
   \ifupol@ended\else\zlabel{upol@textlast}\global\upol@endedtrue\fi}
 \pretocmd\appendix{\upol@markend\global\upol@apptrue}{}
   {\ClassError{upolthesis}{Could not patch \string\appendix}{}}
+% bibliography items, counted as they are printed
+\newcounter{upol@bibitems}
 \AtEndDocument{%
   \ifupol@app
-    \immediate\write\@auxout{\gdef\string\upol@appcount{\the\c@chapter}}%
+    \immediate\write\@auxout{\gdef\string\upol@autoapps{\the\c@chapter}}%
   \fi
+  \immediate\write\@auxout{\gdef\string\upol@autobib{\the\c@upol@bibitems}}%
   \upol@markend}
+\newcommand\upol@theapps{\ifdefined\upol@appcount\upol@appcount\else\upol@autoapps\fi}
+\newcommand\upol@thebib{\ifdefined\upol@bibcount\upol@bibcount\else\upol@autobib\fi}
+\newcommand\upol@thechars{%
+  \ifdefined\upol@chars\upol@num{\upol@chars}%
+  \else\ifnum\upol@autochars>0 \upol@num{\upol@autochars}\else\textbf{???}\fi\fi}
 \newcommand\upol@num[1]{%
   \ifx\upol@langcode\upol@tmp@en\num[group-separator={,}]{#1}%
   \else\num[group-separator={\,}]{#1}\fi}
 \newcommand\upol@extent[1]{% #1 = language
-  \ztotpages~\upol@strin{#1}{a@pages},
-  \ifdefined\upol@chars\upol@num{\upol@chars}%
-  \else\ifnum\upol@autochars>0 \upol@num{\upol@autochars}\else\textbf{???}\fi\fi
-  ~\upol@strin{#1}{a@chars}}
+  \ztotpages~\upol@strin{#1}{a@pages}, \upol@thechars~\upol@strin{#1}{a@chars}}
 
 %% ----------------------------------------------------------------- layout
 %% Defaults; the department file may change any of these.
 \geometry{top=25mm, bottom=25mm, inner=30mm, outer=25mm}
 \def\upol@deptspacing{1.3}
+\def\upol@deptfont{pagella}
+\def\upol@deptlogo{shield}
+\def\upol@deptcjk{}
+\newif\ifupol@signature \upol@signaturetrue  % signature line in the declaration
 \pagestyle{plain}
 \titleformat{\chapter}[hang]{\upol@startmark\normalfont\LARGE\bfseries}{\thechapter}{0.8em}{}
 \titlespacing*{\chapter}{0pt}{0pt}{1.5\baselineskip}
@@ -290,7 +313,7 @@
   \vspace{2\baselineskip}
   \noindent\upol@str{inplace}~\ifdefined\upol@date\upol@date\else
     \makebox[3cm]{\dotfill}\fi
-  \hfill\parbox[t]{5cm}{\centering\dotfill\\ \upol@str{signature}}\par
+  \ifupol@signature\hfill\parbox[t]{5cm}{\centering\dotfill\\ \upol@str{signature}}\fi\par
   \upol@declsection{aiuse}{\upol@aiuse}
   \ifx\upol@type\upol@tmp@phd
     \ifdefined\upol@ipstatement\else
@@ -324,7 +347,7 @@
   \ifdefined\upol@consultant
     \upol@field{\upol@strin{#1}{consultant}}{\upol@consultant}\fi
   \upol@field{\upol@strin{#1}{a@extent}}{\upol@extent{#1}}
-  \upol@field{\upol@strin{#1}{a@app}}{\upol@appcount}
+  \upol@field{\upol@strin{#1}{a@app}}{\upol@theapps}
   \par\noindent\textbf{\upol@strin{#1}{abstract}:}\par\nobreak\smallskip\noindent
   \ifcsdef{upol@abs@#1}{\csuse{upol@abs@#1}}
     {\ClassWarning{upolthesis}{No abstract in language `#1'}\textbf{???}}\par
@@ -334,6 +357,78 @@
   \end{otherlanguage}
   \clearpage}
 
+%% The annotation page (KAS): one page in the language of the thesis,
+%% with the counts of pages, characters, works cited and appendices.
+\newcommand\upol@annotationpage{%
+  \chapter*{\upol@str{annotation}}\thispagestyle{empty}
+  \upol@field{\upol@str{a@title}}{\upol@thetitle}
+  \upol@field{\upol@str{a@author}}{\@author}
+  \upol@field{\upol@str{supervisor}}{\upol@supervisor}
+  \ifdefined\upol@consultant
+    \upol@field{\upol@str{consultant}}{\upol@consultant}\fi
+  \upol@field{\upol@str{a@npages}}{\ztotpages}
+  \upol@field{\upol@str{a@nchars}}{\upol@thechars}
+  \upol@field{\upol@str{a@nbib}}{\upol@thebib}
+  \upol@field{\upol@str{a@app}}{\upol@theapps}
+  \upol@field{\upol@str{a@keywords}}{\ifcsdef{upol@kw@\upol@langcode}
+    {\csuse{upol@kw@\upol@langcode}}{\textbf{???}}}
+  \noindent\ifcsdef{upol@abs@\upol@langcode}{\csuse{upol@abs@\upol@langcode}}
+    {\ClassWarning{upolthesis}{No abstract in the language of the thesis}%
+     \textbf{???}}\par
+  \clearpage}
+
+%% \makeresume: the résumé in the other language (English, or Czech for an
+%% English thesis), from \abstracten (or \abstractcs).  Departments that
+%% require it set \upol@resumewords{min}{max} and get a warning if it is
+%% missing or the wrong length.
+\newif\ifupol@resumedone
+\NewDocumentCommand\makeresume{}{%
+  \global\upol@resumedonetrue
+  \edef\upol@tmp{\noexpand\begin{otherlanguage}{\csuse{upol@babel@\upol@othercode}}}%
+  \upol@tmp
+  \chapter*{\upol@strin{\upol@othercode}{resume}}
+  \addcontentsline{toc}{chapter}{\upol@strin{\upol@othercode}{resume}}
+  \ifcsdef{upol@abs@\upol@othercode}{\csuse{upol@abs@\upol@othercode}}
+    {\ClassWarning{upolthesis}{No abstract in language `\upol@othercode'}%
+     \textbf{???}}\par
+  \medskip
+  \upol@field{\upol@strin{\upol@othercode}{a@keywords}}{%
+    \ifcsdef{upol@kw@\upol@othercode}{\csuse{upol@kw@\upol@othercode}}{\textbf{???}}}
+  \end{otherlanguage}
+  \ifdefined\upol@resumemin\upol@checkwords\fi}
+\newcommand\upol@resumewords[2]{\def\upol@resumemin{#1}\def\upol@resumemax{#2}%
+  \AtEndDocument{\ifupol@resumedone\else
+    \ClassWarningNoLine{upolthesis}{The department requires a résumé:
+      use \string\makeresume\space after the conclusion}\fi}}
+\ExplSyntaxOn
+\seq_new:N \l__upol_words_seq
+\cs_new_protected:Npn \upol@checkwords
+  {
+    \tl_set:Nv \l_tmpa_tl { upol@abs@ \upol@othercode }
+    \seq_set_split:NnV \l__upol_words_seq { ~ } \l_tmpa_tl
+    \seq_remove_all:Nn \l__upol_words_seq { }
+    \int_compare:nNnTF { \seq_count:N \l__upol_words_seq } < { \upol@resumemin }
+      { \upol@wordwarning } 
+      {
+        \int_compare:nNnT { \seq_count:N \l__upol_words_seq } > { \upol@resumemax }
+          { \upol@wordwarning }
+      }
+  }
+\cs_new_protected:Npn \upol@wordwarning
+  {
+    \ClassWarningNoLine{upolthesis}{The~résumé~has~about~
+      \seq_count:N \l__upol_words_seq \c_space_tl words;~the~department~asks~for~
+      \upol@resumemin --\upol@resumemax}
+  }
+\ExplSyntaxOff
+
+%% The pages between the title page and the table of contents, in order.
+\newcommand\upol@frontpages{%
+  \upol@declarationpage
+  \upol@ackpage
+  \upol@abstractpage{\upol@natcode}
+  \upol@abstractpage{en}}
+
 %% \makefrontmatter[lof,lot]: title page, declaration, acknowledgements,
 %% abstracts, table of contents and, optionally, the lists of figures (lof)
 %% and tables (lot).  The character count starts after it.
@@ -341,17 +436,19 @@
 \def\upol@list@lot{\listoftables}
 \NewDocumentCommand\makefrontmatter{O{}}{%
   \upol@titlepage
-  \ifupol@autoref\else
-    \upol@declarationpage
-    \upol@ackpage
-    \upol@abstractpage{\upol@natcode}
-    \upol@abstractpage{en}
-  \fi
+  \ifupol@autoref\else\upol@frontpages\fi
   \tableofcontents
   \renewcommand*\do[1]{\ifcsdef{upol@list@##1}{\csuse{upol@list@##1}}
     {\ClassError{upolthesis}{Unknown list `##1'}{Use lof or lot.}}}%
   \docsvlist{#1}%
+  \upol@frontchapter{abbrev}{\upol@abbrev}%
+  \upol@frontchapter{editnote}{\upol@editnote}%
   \gdef\upol@startmark{\zlabel{upol@textstart}\global\let\upol@startmark\relax}}
+
+% \upol@frontchapter{string key}{macro}: an unnumbered chapter, if defined
+\newcommand\upol@frontchapter[2]{%
+  \ifdefined#2\chapter*{\upol@str{#1}}%
+    \addcontentsline{toc}{chapter}{\upol@str{#1}}#2\par\fi}
 
 %% Autoreferát (SZŘ UP čl. 44 odst. 7): at the end, a one-page English
 %% abstract and, if the dissertation is not in Czech or Slovak, a Czech
@@ -383,11 +480,15 @@
   % biblatex-apa has Czech strings but no Slovak ones
   \DeclareLanguageMapping{slovak}{american-apa}
   \newcommand\thesisbibfile[1]{\addbibresource{#1}}
+  \AtEveryBibitem{\stepcounter{upol@bibitems}}
   \newcommand\thesisbibliography{%
     \upol@markend\printbibliography[title=\upol@str{bibname}]}
 \fi
 \def\upol@tmp{acl}\ifx\upol@bib\upol@tmp
   \RequirePackage[authoryear,round]{natbib}
+  \AtBeginEnvironment{thebibliography}{%
+    \let\upol@bibitem\bibitem
+    \def\bibitem{\stepcounter{upol@bibitems}\upol@bibitem}}
   \newcommand\thesisbibfile[1]{\def\upol@bibfile{#1}}
   \newcommand\thesisbibliography{%
     \upol@markend
@@ -403,6 +504,60 @@
 \InputIfFileExists{upolthesis-\upol@dept.def}{}
   {\ClassError{upolthesis}{Unknown department `\upol@dept'}
     {There is no file upolthesis-\upol@dept.def.}}
+
+%% ------------------------------------------------------------------ fonts
+\ifx\upol@font\@empty\let\upol@font\upol@deptfont\fi
+\ifx\upol@logo\@empty\let\upol@logo\upol@deptlogo\fi
+\ifx\upol@cjk\@empty\let\upol@cjk\upol@deptcjk\fi
+\newcommand\upol@setfont[2]{% #1 = font name, #2 = which (main/sans/mono)
+  \IfFontExistsTF{#1}{\csname set#2font\endcsname{#1}}
+    {\ClassWarning{upolthesis}{Font `#1' not found; keeping default}}}
+\def\upol@tmp{pagella}\ifx\upol@font\upol@tmp
+  \upol@setfont{TeX Gyre Pagella}{main}\upol@setfont{TeX Gyre Heros}{sans}\fi
+\def\upol@tmp{termes}\ifx\upol@font\upol@tmp
+  \upol@setfont{TeX Gyre Termes}{main}\upol@setfont{TeX Gyre Heros}{sans}\fi
+\def\upol@tmp{tnr}\ifx\upol@font\upol@tmp  % Times New Roman if installed
+  \IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}
+    {\ClassWarning{upolthesis}{Times New Roman not found; using TeX Gyre Termes}%
+     \upol@setfont{TeX Gyre Termes}{main}}%
+  \upol@setfont{TeX Gyre Heros}{sans}\fi
+\def\upol@tmp{charis}\ifx\upol@font\upol@tmp  % full IPA coverage
+  \upol@setfont{Charis SIL}{main}\upol@setfont{TeX Gyre Heros}{sans}\fi
+\def\upol@tmp{none}\ifx\upol@font\upol@tmp\else
+  \upol@setfont{Inconsolata}{mono}\fi
+
+%% Chinese, Japanese and Korean (LuaLaTeX only).  Babel switches to the
+%% CJK font by itself and breaks CJK lines.  Kana and hangul are
+%% unambiguous; plain Han characters take the first language listed.
+%% \textzh{}, \textzhtw{}, \textja{} and \textko{} switch explicitly.
+\def\upol@cjk@zh{chinese-simplified}\def\upol@cjkfont@zh{SC}
+\def\upol@cjk@zhtw{chinese-traditional}\def\upol@cjkfont@zhtw{TC}
+\def\upol@cjk@ja{japanese}\def\upol@cjkfont@ja{JP}
+\def\upol@cjk@ko{korean}\def\upol@cjkfont@ko{KR}
+\newcommand\upol@addcjk[1]{%
+  \ifcsdef{upol@cjk@#1}{%
+    \edef\upol@tmp{\csuse{upol@cjk@#1}}%
+    \edef\upol@tmpb{\noexpand\babelprovide[import, onchar=ids fonts]{\upol@tmp}}%
+    \upol@tmpb
+    \upol@cjkfont{\upol@tmp}{rm}{Noto Serif CJK \csuse{upol@cjkfont@#1}}%
+    \upol@cjkfont{\upol@tmp}{sf}{Noto Sans CJK \csuse{upol@cjkfont@#1}}%
+    \expandafter\edef\csname text#1\endcsname{%
+      \noexpand\foreignlanguage{\upol@tmp}}}
+   {\ClassError{upolthesis}{Unknown CJK language `#1'}{Use zh, zhtw, ja or ko.}}}
+% \upol@cjkfont{babel language}{rm|sf}{font name}
+\newcommand\upol@cjkfont[3]{%
+  \IfFontExistsTF{#3}
+    {\edef\upol@tmpb{\noexpand\babelfont[#1]{#2}{#3}}\upol@tmpb}
+    {\ClassWarning{upolthesis}{Font `#3' not found}}}
+\ifx\upol@cjk\@empty\else
+  \ifLuaTeX
+    \renewcommand*\do[1]{\upol@addcjk{#1}}
+    \expandafter\docsvlist\expandafter{\upol@cjk}
+  \else
+    \ClassWarning{upolthesis}{CJK support needs LuaLaTeX; option cjk ignored}
+  \fi
+\fi
+
 \setstretch{\ifx\upol@spacing\@empty\upol@deptspacing\else\upol@spacing\fi}
 
 \RequirePackage[hidelinks,unicode]{hyperref}

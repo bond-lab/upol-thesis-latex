@@ -1,6 +1,6 @@
 # make             build the three examples
 # make DOC=thesis  build thesis.pdf
-EXAMPLES = example-kol example-kol-phd example-kol-phd-autoreferat
+EXAMPLES = example-kol example-kol-phd example-kol-phd-autoreferat example-kas
 DOC ?=
 LATEXMK = latexmk -lualatex -interaction=nonstopmode -halt-on-error
 
