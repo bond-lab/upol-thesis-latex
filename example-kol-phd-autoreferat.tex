@@ -1,0 +1,26 @@
+% Example: the autoreferát of example-kol-phd.tex (SZŘ UP čl. 44 odst. 7).
+% It is written in the language of the dissertation; the class adds a
+% one-page English abstract and, for a dissertation not in Czech or Slovak,
+% a Czech summary at the end.  Build with `make DOC=example-kol-phd-autoreferat`.
+\documentclass[department=kol, autoreferat, language=english, gender=f, bib=acl]{upolthesis}
+
+\input{example-kol-phd-meta}
+
+\begin{document}
+\makefrontmatter
+
+% the parts follow the order of čl. 44 odst. 4
+\chapter{State of the art}
+\chapter{Aims}
+\chapter{Theoretical background}
+\chapter{Own solution}
+\chapter{Results}
+Aspect is a verbal category \citep{Comrie:1976}.
+\chapter{Evaluation}
+
+\chapter*{List of publications}
+\addcontentsline{toc}{chapter}{List of publications}
+Nováková, Jana (2027).  ...  Cited by: ...
+
+\thesisbibliography
+\end{document}

@@ -1,0 +1,56 @@
+%% upolthesis-kol.def -- Katedra obecné lingvistiky (General Linguistics)
+%%
+%% Follows the department page https://kol.upol.cz/studium/diplomove-prace/
+%% and its Word template DP-KOL_temp.docx (2014):
+%%   - thesis in Czech, Slovak or English; electronic submission only
+%%   - length without appendices: BA >= 72,000 characters, MA >= 108,000
+%%   - declaration, structured table of contents, abstract in Czech and
+%%     English (>= 900 characters each) with keywords
+%%   - any standard citation style
+%% KOL sets no margins, fonts or spacing; the class defaults are used.
+%%
+%% Dissertations (programme Obecná jazykověda a teorie komunikace,
+%% P0232D090005, accredited in Czech): the oborová rada sets no formal rules,
+%% so the title page and declaration follow recent KOL dissertations, with
+%% the IP statement that SZŘ UP čl. 44 odst. 4h requires.
+\ProvidesFile{upolthesis-kol.def}[2026/10/05 v0.1 KOL preset]
+
+\upol@defstr{dept}{Katedra obecné lingvistiky}{Katedra obecné lingvistiky}
+  {Department of General Linguistics}
+\upol@defstr{type@ba}{bakalářská diplomová práce}{bakalárska práca}
+  {Bachelor's thesis}
+\upol@defstr{type@ma}{magisterská diplomová práce}{diplomová práca}
+  {Master's thesis}
+\upol@defstr{typeacc@ba}{bakalářskou diplomovou práci}{bakalársku prácu}
+  {bachelor's thesis}
+\upol@defstr{typeacc@ma}{magisterskou diplomovou práci}{diplomovú prácu}
+  {master's thesis}
+\upol@defstr{type@phd}{disertační práce}{dizertačná práca}{Ph.D. thesis}
+\upol@defstr{programmename}{Obecná jazykověda a~teorie komunikace}
+  {Obecná jazykověda a~teorie komunikace}
+  {General Linguistics and Theory of Communication}
+
+% minimum length in characters (the class warns if the text is shorter)
+\def\upol@minchars@ba{72000}
+\def\upol@minchars@ma{108000}
+
+% title page as in DP-KOL_temp.docx
+\renewcommand\upol@titlepage{%
+  \begingroup\thispagestyle{empty}\centering\setstretch{1.1}
+    {\Large\upol@str{facultyuniv}\par\medskip\upol@str{dept}\par}
+    \vfill\upol@logobox\vfill
+    {\Huge\bfseries\upol@thetitle\par}
+    \ifx\upol@type\upol@tmp@phd\ifx\upol@langcode\upol@tmp@en\else
+      \medskip{\Large\upol@titlein{en}\par}\fi\fi
+    \bigskip
+    {\Large\upol@typeline\par}
+    \vfill
+    {\raggedright
+      \upol@str{author}: \@author\par
+      \upol@str{supervisor}: \upol@supervisor\par
+      \ifdefined\upol@consultant\upol@str{consultant}: \upol@consultant\par\fi
+      \ifx\upol@type\upol@tmp@phd
+        \upol@str{programme}: \upol@theprogramme\par\fi}
+    \vspace{2\baselineskip}
+    {\bfseries Olomouc\par}\upol@year\par
+  \endgroup\clearpage}

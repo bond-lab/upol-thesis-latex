@@ -1,0 +1,46 @@
+% Example: a KOL dissertation in English (needs the oborová rada's consent,
+% SZŘ UP čl. 44 odst. 3).  Build with `make DOC=example-kol-phd`.
+\documentclass[department=kol, type=phd, language=english, gender=f, bib=acl]{upolthesis}
+
+\usepackage{langsci-gb4e}
+\let\eachwordone=\itshape
+\providecommand{\noautomath}{}
+\noautomath
+\newcommand{\gm}[1]{\textsc{\MakeLowercase{#1}}}
+
+\input{example-kol-phd-meta}
+
+% Required by SZŘ UP čl. 44 odst. 4h; no official wording exists, so check
+% this suggestion with the oborová rada.
+\ipstatement{I am the author of this dissertation within the meaning of Act
+  No.~121/2000 Coll., the Copyright Act.  Chapters~3 and~4 are based on
+  papers published with co-authors; they are listed, with my share of the
+  work, in the List of publications.  I agree to the publication of the
+  dissertation in accordance with Section~47b of Act No.~111/1998 Coll.,
+  the Higher Education Act.}
+% Needed only if the work was part of a project with several researchers
+% (čl. 44 odst. 6).
+\contribution{[Statement by the project leader and co-investigators on the
+  student's authorship and share of the work.]}
+\acknowledgements{I thank my supervisor.}
+\aiuse{[Name and version of the tool] was used for language editing.
+  I am fully responsible for the content.}
+
+\begin{document}
+\makefrontmatter
+
+\chapter{Introduction}
+Aspect is a verbal category \citep{Comrie:1976}.
+
+\chapter{State of the art}
+\chapter{Theoretical background}
+\chapter{Data and methods}
+\chapter{Results}
+\chapter{Conclusion}
+
+\chapter*{List of publications}
+\addcontentsline{toc}{chapter}{List of publications}
+Nováková, Jana (2027).  ...
+
+\thesisbibliography
+\end{document}
