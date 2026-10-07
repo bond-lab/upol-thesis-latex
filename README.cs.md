@@ -89,7 +89,8 @@ Do té doby strana s abstraktem ukazuje **???**.
 **Na Overleafu.** Nahrajte všechny soubory z kořenového adresáře
 repozitáře. V *Menu → Compiler* pak zvolte **LuaLaTeX**. Overleaf sám spustí
 biber nebo bibtex. Skript `upol-count.sh` ale spustit neumí, takže počet
-znaků zadejte ručně příkazem `\charcount{85432}`.
+znaků zadejte ručně příkazem `\charcount{85432}`. Písma Noto CJK pro
+čínštinu, japonštinu a korejštinu Overleaf už má.
 
 Třída odmítne pdfLaTeX. XeLaTeX funguje také.
 

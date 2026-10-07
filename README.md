@@ -91,7 +91,8 @@ then, the abstract page shows **???**.
 **On Overleaf.** Upload all the files from the repository root. Then set
 *Menu → Compiler* to **LuaLaTeX**. Overleaf runs biber or bibtex by itself.
 It cannot run `upol-count.sh`, so give the character count by hand with
-`\charcount{85432}`.
+`\charcount{85432}`. Overleaf already has the Noto CJK fonts for Chinese,
+Japanese and Korean.
 
 The class refuses pdfLaTeX. XeLaTeX also works.
 
